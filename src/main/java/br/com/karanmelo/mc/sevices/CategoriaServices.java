@@ -3,10 +3,12 @@ package br.com.karanmelo.mc.sevices;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import br.com.karanmelo.mc.domain.Categoria;
 import br.com.karanmelo.mc.repositories.CategoriaRepository;
+import br.com.karanmelo.mc.sevices.exception.DataIntegrityException;
 import br.com.karanmelo.mc.sevices.exception.ObjectNotFoundException;
 
 @Service
@@ -29,5 +31,15 @@ public class CategoriaServices {
 	public Categoria update(Categoria obj) {
 		find(obj.getID());
 		return repo.save(obj);
+	}
+	
+	public void delete(Integer id) {
+		find(id);
+		try {
+			repo.deleteById(id);
+		} catch(DataIntegrityViolationException e) {
+			throw new DataIntegrityException("É necessário remover os produtos da categoria!");
+		}
+		
 	}
 }
